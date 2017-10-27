@@ -65,13 +65,14 @@ def movePieceR():
 			if(pieceX <8 and pieceX >=0 and pieceY <8 and pieceY >=0 ):	
 				#Checks if a players piece is there to be moved
 				if(board[pieceY][pieceX]== playeR):
-					print('right piece!')
+					print('\n' 'Right piece!' '\n')
 					#Checks if there's an enemy's piece there to be eaten and handles the exception for columns 0 and 7
 					try:
-						if((board[pieceY+1][pieceX-1]==playerB or board[pieceY+1][pieceX+1]==playerB) and (board[pieceY+2][pieceX-2]==playerB or board[pieceY+2][pieceX+2]==playerB)):
+						if((board[pieceY+1][pieceX-1]==playerB or board[pieceY+1][pieceX+1]==playerB) and(board[pieceY+2][pieceX+2]!=playerB or board[pieceY+2][pieceX-2]!=playerB)):
 							eat=input('\n' 'Available piece to be eaten.Press Y to eat or N not to' '\n')					
 							#Moves the piece chosen over the enemy's piece and eats it
 							if(eat=='Y' or eat=='y'):
+				
 								if(board[pieceY+1][pieceX-1]==playerB):
 									board[pieceY+2][pieceX-2]=board[pieceY][pieceX]
 									board[pieceY][pieceX]=0
@@ -109,11 +110,13 @@ def movePieceR():
 
 									else:
 										print('A piece is already there!')
+						elif((board[pieceY+1][pieceX-1]==playerB or board[pieceY+1][pieceX+1]==playerB) and(board[pieceY+2][pieceX+2]==playerB or board[pieceY+2][pieceX-2]==playerB)):
+							print('...but there is not legal moves available. Try again :D')
 					except:
 						pass
 					try:	
 						if((board[pieceY+1][pieceX-1]==0 or board[pieceY+1][pieceX+1]==0)and turn!=1): 
-							move=input('\n' 'Where do you want it instead?' '\n')
+							move=input('Where do you want it instead?' '\n')
 
 							if (len(move) == 3):
 								splitcord= move.split(',')
@@ -151,9 +154,9 @@ def movePieceB():
 			pieceY=int(splitcord[1])
 			if(pieceX >=0 and pieceX <8 and pieceY >=0 and pieceY <8):
 				if(board[pieceY][pieceX]== playerB):
-					print('right piece!')
+					print('\n''Right piece!''\n')
 					try:
-						if(board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX+1]==playeR):
+						if((board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX+1]==playeR) and (board[pieceY+2][pieceX+2]!=playeR or board[pieceY+2][pieceX-2]!=playeR)):
 							eat=input('\n' 'Available piece to be eaten.Press Y to eat or N not to' '\n')					
 							if(eat=='Y' or eat=='y'):
 								if(board[pieceY-1][pieceX-1]==playeR):
@@ -192,7 +195,7 @@ def movePieceB():
 						pass
 					try:
 						if((board[pieceY-1][pieceX-1]==0 or board[pieceY-1][pieceX+1]==0) and turn!=0):
-							move=input('\n' 'Where do you want it?' '\n')
+							move=input( 'Where do you want it?' '\n')
 
 							if (len(move) == 3):
 								splitcord= move.split(',')
