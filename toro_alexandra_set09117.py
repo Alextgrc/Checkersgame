@@ -2,14 +2,14 @@ import random
 import copy
 import sys
 #Creating the board
-board = [ [0, 1, 0, 0, 0, 1, 0, 1],
- 		  [1, 0, 2, 0, 0, 0, 1, 0],
- 		  [0, 0, 0, 0, 0, 4, 0, 0],
- 		  [0, 0, 0, 0, 2, 0, 0, 2],
- 		  [0, 4, 0, 0, 0, 0, 0, 0],
- 		  [3, 0, 1, 0, 2, 0, 1, 0],
+board = [ [0, 1, 0, 0, 0, 0, 0, 0],
+ 		  [0, 0, 2, 0, 0, 0, 0, 0],
  		  [0, 0, 0, 0, 0, 0, 0, 0],
- 		  [2, 0, 2, 0, 2, 0, 0, 0]]
+ 		  [0, 0, 0, 0, 0, 0, 0, 0],
+ 		  [0, 0, 0, 0, 0, 0, 0, 0],
+ 		  [0, 0, 0, 0, 0, 0, 0, 0],
+ 		  [0, 0, 0, 0, 0, 0, 0, 0],
+ 		  [0, 0, 0, 0, 0, 0, 0, 0]]
 #board = [[0, 1, 0, 1, 0, 1, 0, 1],
 # 		  [1, 0, 1, 0, 1, 0, 1, 0],
 #		  [0, 1, 0, 1, 0, 1, 0, 1],
@@ -50,7 +50,7 @@ def printGrid():
 
 	print('│0│1│2│3│4│5│6│7│')
 	print('└─┴─┴─┴─┴─┴─┴─┴─┘')
-
+	checkVictory()
 #Controls turns checking between the computer and the user
 def arcadeMode():
 	if(turn==0):
@@ -299,11 +299,16 @@ def validateAI():
 	pieceX=(random.randint(0,7))
 	#Checks the values selected are correct
 	if(pieceX >=0 and pieceX <8 and pieceY >=0 and pieceY <8):
+		#If a normal piece is selected, normal moves will be executed
 		if((board[pieceY][pieceX]== playerB) and((board[pieceY-1][pieceX+1]==0 or board[pieceY-1][pieceX-1]==0) or (board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX-1]==playerKR or board[pieceY-1][pieceX+1]==playerKR))):
+			#If there's a piece that can be eaten, it'll b executed first
 			if(((board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)  and board[pieceY-2][pieceX-2]==0) or ((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR) and board[pieceY-2][pieceX+2]==0)):
 				if(pieceX >=0 and pieceX <8 and pieceY >=0 and pieceY <8):
+					#Makes user aware of the piece selected
 					print('\n''Your enemy has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
+					#Checks both sides for enemy's pieces that could be eaten
 					if(board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR):
+						#Updates board values
 						board[pieceY-2][pieceX-2]=board[pieceY][pieceX]
 						board[pieceY][pieceX]=0
 						board[pieceY-1][pieceX-1]=0
@@ -311,9 +316,11 @@ def validateAI():
 						newPosX=pieceX-2
 						printGrid()
 						print('\n' 'Oh no! Enemy ate one of your pieces!' '\n')
+						#Checks if there's any double jumps available 
 						doubleJumpB()
 						printGrid()
 						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						#Changes turn to the other player
 						global turn
 						turn=0
 					elif(board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR):
@@ -328,6 +335,7 @@ def validateAI():
 						printGrid()
 						print('\n''And moved it to '+str(newPosX)+', '+str(newPosY)+'\n')
 						turn=0
+			#If there's no nearby pieces to be eaten, it will move it to the next avalible square
 			if((board[pieceY-1][pieceX-1]==0 or board[pieceY-1][pieceX+1]==0) and turn==1):
 				if(pieceX-1 >=0 and pieceX+1 <8 and pieceY-1 >=0 and pieceY+1 <8):
 					print('\n''Your enemy has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
@@ -343,7 +351,9 @@ def validateAI():
 						printGrid()
 						print('\n''And moved it to '+str(pieceX+1)+', '+str(pieceY-1)+'\n')
 						turn=0
+		#If the piece selected is a King, special will be unlocked
 		if(board[pieceY][pieceX]== playerKB):
+			#If there's a piece that can be eaten, it'll b executed first
 			if (board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX+1]==playeR or board[pieceY+1][pieceX-1]==playeR or board[pieceY+1][pieceX+1]==playeR or board[pieceY-1][pieceX-1]==playerKR or board[pieceY-1][pieceX+1]==playerKR or board[pieceY+1][pieceX-1]==playerKR or board[pieceY+1][pieceX+1]==playerKR):
 				if (pieceX-2 >=0 and pieceX+2 <8 and pieceY-2 >=0 and pieceY+2 <8):
 					if(board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR):
@@ -394,6 +404,7 @@ def validateAI():
 						printGrid()
 						print('\n''And moved it to '+str(newPosX)+', '+str(newPosY)+'\n')
 						turn=0
+			#If there's no enemy's pieces neraby, it'll be moved to the next available spot
 			if(board[pieceY-1][pieceX+1]==0 or board[pieceY-1][pieceX-1]==0 or board[pieceY+1][pieceX+1]==0 or board[pieceY+1][pieceX-1]==0):
 				if (pieceX-1 >=0 and pieceX+1 <8 and pieceY-1 >=0 and pieceY+1 <8):
 					print('\n''Your enemy has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
@@ -421,8 +432,11 @@ def validateAI():
 						printGrid()
 						print('\n''And moved it to '+str(pieceX+1)+', '+str(pieceY-1)+'\n')
 						turn=0
+#Checks the coordinates given are valid
 def validateB():
+		#Makes these variables global so their values can be used by other functions
 		global piece, pieceX, pieceY, move, moveX, moveY, board,turn,board2,copyBoard
+		#Gives player options to move piece, exit the game or ask for help if the input is incorrect
 		piece = input('\n' 'Its player B turn! Choose your piece to move or EXIT to quit:' '\n')
 		if ( piece == 'help'):
 		    print('Type the coordinates (originating from the top left) of the box you want to put a cross into in the format \'y,x\' (e.g. 3,2) or EXIT to quit''\n')
@@ -451,9 +465,12 @@ def validateB():
 				
 		else:
 			print('Invalid input. Type \'help\' if you\'re stuck')
+#Controls the Kings special moves
 def possibleMovesBKing():
+	#Making these values global so they can be used accross functions 
 	global newPosX, newPosY, turn
 	try:
+		#Checks there's avalible spaces to jump over after taking a enemy's piece
 		if(board[pieceY+2][pieceX+2]==0 or board[pieceY+2][pieceX-2]==0 or board[pieceY-2][pieceX+2]==0 or board[pieceY-2][pieceX-2]==0):
 			if(board[pieceY+1][pieceX-1]==playerKR or board[pieceY+1][pieceX-1]==playeR):
 				#Updates board
@@ -505,6 +522,7 @@ def possibleMovesBKing():
 				turn=0
 	except:
 		pass
+#Controls the Black pieces moves
 def possibleMovesB():
 	global newPosX, newPosY,turn
 	#Handles exception incase values are out of range
@@ -600,16 +618,12 @@ def doubleJumpB():
 			board[newPosY-2][newPosX-2]=board[newPosY][newPosX]
 			board[newPosY][newPosX]=0
 			board[newPosY-1][newPosX-1]=0
-			#newPosY=newPosY-2
-			#newPosX=newPosX-2
-			#doubleJumpB()
 		elif(board[newPosY-1][newPosX+1]==playerR or board[pieceY-1][pieceX+1]==playerKR):
 			input('Your enemy has a double jump available. Press enter to continue')
 			board[newPosY-2][newPosX+2]=board[newPosY][newPosX]
 			board[newPosY][newPosX]=0
 			board[newPosY-1][newPosX+1]=0
-			#newPosY=newPosY-2
-			#newPosX=newPosX+2
+	#Checks if the piece to make the double jump is a King and allows them to make a double jump in any direction
 	if(board[newPosY][newPosX]==playerKB):
 		while(((board[newPosY+1][newPosX-1]==playeR or board[newPosY+1][newPosX-1]==playerKR) and board[newPosY+2][newPosX-2]==0) or((board[newPosY+1][newPosX+1]==playeR or board[newPosY+1][newPosX+1]==playerKR) and board[newPosY+2][newPosX+2]==0) or((board[newPosY-1][newPosX-1]==playeR or board[newPosY-1][newPosX-1]==playerKR)and board[newPosY-2][newPosX-2]==0) or ((board[newPosY-1][newPosX+1]==playeR or board[newPosY-1][newPosX+1]==playerKR) and board[newPosY-2][newPosX+2]==0)):
 			if((board[newPosY+1][newPosX-1]==playeR or board[newPosY+1][newPosX-1]==playerKR) ):
@@ -634,61 +648,96 @@ def doubleJumpB():
 				board[newPosY-2][newPosX+2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
 				board[newPosY-1][newPosX+1]=0
+#Allows the user's on Two Player mode to undo or redo their moves
 def undoRedo():
 	global board, copyBoard,board2, turn
 	undoBoard=input ('\n''Type undo if you would like to retake the turn. Otherwise press enter''\n')
+	#If the input by the user is undo, the previous copy of the board before the move will be restored
 	if(undoBoard=='undo' or undoBoard=='Undo'):
+		#Restores the board copy before the move was made
 		board=copyBoard[:]
 		board=copy.deepcopy(copyBoard)
 		printGrid()
+		#Asks the user if they want to redo their previous move
 		redoBoard=input('\n''Type redo if you would like to retake the turn. Otherwise press enter''\n')
 		if(redoBoard=='redo' or redoBoard=='Redo'):
+			#Restores the copy of the variable after the move was made(board2)
 			board=board2[:]
 			board=copy.deepcopy(board2)
 			printGrid()
+			#Changes the turn to the other player if the chose redo
 			if(turn==1):
 				turn=1
 			elif(turn==0):
 				turn=0
+		# Checks if the user wants to make a different move after choosing undo
 		elif(redoBoard!='redo' and turn==1):
 			validateR()
 		elif(redoBoard!='redo' and turn==0):
 			validateB()
+#Updates the board and pieces once they reache their opposite sides of the board to Kings
 def CheckKing():
+	#Using a for loop to check the first and last row and if they're in the opponents side
 	for i in range(8):
+		#If they have reach the end of the board, they will be converted to Kings
 		if(board[7][i]==1):
 		    board[7][i]=3
 		    print('\n' 'WOW! Your piece is now a Red King' '\n')
 		if(board[0][i]==2):
 		    board[0][i]=4
 		    print('\n' 'WOW! Your enemy has a Black King now' '\n')
-
+#Determinates the winner of the game depending of whom has the last piece on the table
+def checkVictory():
+	#Creates to booleans to check the status of the board
+	winnerR= False
+	winnerB= False
+	#Loops throught the whole board looking for pieces of both players
+	for i in board:
+		for j in i:
+			if(j==playeR or j==playerKR):
+				winnerR= True
+			if(j==playerB or j==playerKB):
+				winnerB=True
+	#If one of the players doesn't have any pieces left, a winner will be declared
+	if(winnerR == True and winnerB == False):
+		print('\n''WOOHOO! RED PLAYER, YOU ARE A WINNER! ''\n')
+		print('--------------GAME OVER--------------''\n')
+		welcomeStart()
+	if(winnerR == False and winnerB == True):
+		print('\n''WOOHOO! RED PLAYER, YOU ARE A WINNER! ''\n')
+		print('--------------GAME OVER--------------''\n')
+		welcomeStart()
+#Contains the main menu and controls the game
 def welcomeStart():
 	input('Welcome to checkers! Press enter to start')
 	gameMode=input('\n''ARCADE MODE: Press 1 │ TWO PLAYER: Press 2 │ HELP: Press 3 │ QUIT: exit''\n')
-	if ( gameMode=='3'):
-		print('\n''Type the coordinates (originating from the top left) of the box you want to put a cross into in the format \'y,x\' (e.g. 3 2)''\n')
-		welcomeStart() #once it has shown help, it calls it´self again, asking for another number, until it is 1 or 2
-
+	#Lets user now who is staring the game
 	print('\n' 'You are playing as Rs')
 	printGrid()
+	#Selects a game mode
 	if(gameMode=='1'):
 		while(True):
 			try:	
+				#Controls turns against the computer
 				arcadeMode()
 			except ValueError:
 				print('Incorrect input')
 	if(gameMode=='2'):
 		while(True):
 			try:	
+				#Controls turns between player
 				twoPlayerMode()
 			except ValueError:
 				print('Incorrect input')
+	if ( gameMode=='3'):
+		print('\n''Type the coordinates (originating from the top left) of the box you want to put a cross into in the format \'y,x\' (e.g. 3 2)''\n')
+		#Goes back to the game after instructions have been provaided
+		welcomeStart()
 	if(gameMode=='exit'):
 		sys.exit()
 	else:
 		welcomeStart()
-
+	
 #starts the game
 welcomeStart()
 
