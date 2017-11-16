@@ -2,22 +2,15 @@ import random
 import copy
 import sys
 #Creating the board
-board = [ [0, 1, 0, 0, 0, 1, 0, 0],
- 		  [2, 0, 4, 0, 0, 0, 4, 0],
- 		  [0, 0, 0, 0, 0, 3, 0, 0],
- 		  [2, 0, 2, 0, 0, 0, 2, 0],
- 		  [0, 3, 0, 0, 0, 0, 0, 1],
- 		  [2, 0, 2, 0, 0, 0, 2, 0],
- 		  [0, 0, 0, 0, 0, 0, 0, 1],
- 		  [0, 0, 0, 0, 2, 0, 4, 0]]
-#board = [[0, 1, 0, 1, 0, 1, 0, 1],
-# 		  [1, 0, 1, 0, 1, 0, 1, 0],
-#		  [0, 1, 0, 1, 0, 1, 0, 1],
-# 		  [0, 0, 0, 0, 0, 0, 0, 0],
- #		  [0, 0, 0, 0, 0, 0, 0, 0],
- #		  [2, 0, 2, 0, 2, 0, 2, 0],
-# 		  [0, 2, 0, 2, 0, 2, 0, 2],
-# 		  [2, 0, 2, 0, 2, 0, 2, 0]]
+board = [ [0, 1, 0, 1, 0, 1, 0, 1],
+		  [1, 0, 1, 0, 1, 0, 1, 0],
+		  [0, 1, 0, 1, 0, 1, 0, 1],
+ 		  [0, 0, 0, 0, 0, 0, 0, 0],
+		  [0, 0, 0, 0, 0, 0, 0, 0],
+		  [2, 0, 2, 0, 2, 0, 2, 0],
+		  [0, 2, 0, 2, 0, 2, 0, 2],
+ 		  [2, 0, 2, 0, 2, 0, 2, 0]]
+#Declaring variables
 board_size=8  
 y=0
 playeR= 1
@@ -37,7 +30,6 @@ def intToText(num):
 		return 'R'
 	if(num==4):
 		return 'B'
-
 #Prints the grid and updates the board if any pieces have been converted to a King during the last turn
 def printGrid():
 	CheckKing()
@@ -55,16 +47,19 @@ def printGrid():
 def arcadeMode():
 	if(turn==0):
 		validateR()
-
 	if (turn==1):
-		validateAI()
+		validateAIB()
 #Controls turns between two users changing the variable turn after they choose a move	
 def twoPlayerMode():
 	if(turn==0):
 		validateR()
-
 	if (turn==1):
 		validateB()
+def aiVSaiMode():
+	if(turn==0):
+		validateAIR()
+	if (turn==1):
+		validateAIB()
 #Checks the coordinates given are valid
 def validateR():
 	#This variables are global so they can be used in other definitions
@@ -95,7 +90,6 @@ def validateR():
 				undoRedo()	
 			else:
 				print('Cannot move this piece. Try again :)')
-
 	else:
 		print('Invalid input. Type \'help\' if you\'re stuck')
 #Controls the Kings special moves
@@ -218,8 +212,7 @@ def possibleMovesR():
 				printGrid()
 				print('\n' 'CONGRATS! You ate an enemy piece!' '\n')
 				doubleJumpR()
-				turn=1	
-				print('reach')			
+				turn=1
 		#Makes user aware there's no moves
 		elif(((board[pieceY+1][pieceX-1]==playerB or board[pieceY+1][pieceX+1]==playerB) or (board[pieceY+1][pieceX-1]==playerKB or board[pieceY+1][pieceX+1]==playerKB)) and (board[pieceY+2][pieceX+2]!=0 and board[pieceY+2][pieceX-2]!=0)):
 			print('...but there is not legal moves available. Try again :D')
@@ -256,189 +249,53 @@ def possibleMovesR():
 		pass
 #Another jump will be taken if there's an enemy's piece to be eaten
 def doubleJumpR():
-	global turn
-	#Checks that there's another immidiate enemy's piece and that the next square is an empty gap 
-	while(((board[newPosY+1][newPosX+1]==playerB or board[newPosY+1][newPosX+1]==playerKB) and (board[newPosY+2][newPosX+2]==0)) or ((board[newPosY+1][newPosX-1]==playerB or board[newPosY+1][newPosX-1]==playerKB) and (board[newPosY+2][newPosX-2]==0))):
-		#Checks for left and right directions for a Black piece
-		if(board[newPosY+1][newPosX-1]==playerB or board[newPosY+1][newPosX-1]==playerKB):
-			input('Another available piece to be eaten. Press enter to continue')
-			# Updates board values
-			board[newPosY+2][newPosX-2]=board[newPosY][newPosX]
-			board[newPosY][newPosX]=0
-			board[newPosY+1][newPosX-1]=0
-			printGrid()
-		if(board[newPosY+1][newPosX+1]==playerB or board[newPosY+1][newPosX+1]==playerKB):
-			input('Another available piece to be eaten. Press enter to continue')
-			board[newPosY+2][newPosX+2]=board[newPosY][newPosX]
-			board[newPosY][newPosX]=0
-			board[newPosY+1][newPosX+1]=0
-			printGrid()
-		
-	#If the piece that's being move is a King, enemy's pieces can be eaten backwards and forwards
-	if(board[newPosY][newPosX]==playerKR):
-		while(((board[newPosY+1][newPosX-1]==playerB or board[newPosY+1][newPosX-1]==playerKB) and board[newPosY+2][newPosX-2]==0) or((board[newPosY+1][newPosX+1]==playerB or board[newPosY+1][newPosX+1]==playerKB) and board[newPosY+2][newPosX+2]==0) or((board[newPosY-1][newPosX-1]==playerB or board[newPosY-1][newPosX-1]==playerKB)and board[newPosY-2][newPosX-2]==0) or ((board[newPosY-1][newPosX+1]==playerB or board[newPosY-1][newPosX+1]==playerKB) and board[newPosY-2][newPosX+2]==0)):
-			#Checks every direction for enemy's pieces
-			if((board[newPosY+1][newPosX-1]==playerB or board[newPosY+1][newPosX-1]==playerKB) ):
+	if(board[newPosY][newPosX]==playeR):
+		#Checks that there's another immidiate enemy's piece and that the next square is an empty gap 
+		while(((board[newPosY+1][newPosX+1]==playerB or board[newPosY+1][newPosX+1]==playerKB) and (board[newPosY+2][newPosX+2]==0)) or ((board[newPosY+1][newPosX-1]==playerB or board[newPosY+1][newPosX-1]==playerKB) and (board[newPosY+2][newPosX-2]==0))):
+			#Checks for left and right directions for a Black piece
+			if(board[newPosY+1][newPosX-1]==playerB or board[newPosY+1][newPosX-1]==playerKB) and pieceY+1<8 and pieceX-1>=0:
 				input('Another available piece to be eaten. Press enter to continue')
 				# Updates board values
 				board[newPosY+2][newPosX-2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
 				board[newPosY+1][newPosX-1]=0
 				printGrid()
-			if((board[newPosY+1][newPosX+1]==playerB or board[newPosY+1][newPosX+1]==playerKB)):
+			if(board[newPosY+1][newPosX+1]==playerB or board[newPosY+1][newPosX+1]==playerKB) and pieceY+1<8 and pieceX+1<8:
+				input('Another available piece to be eaten. Press enter to continue')
+				board[newPosY+2][newPosX+2]=board[newPosY][newPosX]
+				board[newPosY][newPosX]=0
+				board[newPosY+1][newPosX+1]=0
+				printGrid()	
+	#If the piece that's being move is a King, enemy's pieces can be eaten backwards and forwards
+	if(board[newPosY][newPosX]==playerKR):
+		while(((board[newPosY+1][newPosX-1]==playerB or board[newPosY+1][newPosX-1]==playerKB) and board[newPosY+2][newPosX-2]==0) or((board[newPosY+1][newPosX+1]==playerB or board[newPosY+1][newPosX+1]==playerKB) and board[newPosY+2][newPosX+2]==0) or((board[newPosY-1][newPosX-1]==playerB or board[newPosY-1][newPosX-1]==playerKB)and board[newPosY-2][newPosX-2]==0) or ((board[newPosY-1][newPosX+1]==playerB or board[newPosY-1][newPosX+1]==playerKB) and board[newPosY-2][newPosX+2]==0)):
+			#Checks every direction for enemy's pieces
+			if((board[newPosY+1][newPosX-1]==playerB or board[newPosY+1][newPosX-1]==playerKB)and pieceY+1<8 and pieceX-1>=0 ):
+				input('Another available piece to be eaten. Press enter to continue')
+				# Updates board values
+				board[newPosY+2][newPosX-2]=board[newPosY][newPosX]
+				board[newPosY][newPosX]=0
+				board[newPosY+1][newPosX-1]=0
+				printGrid()
+			if((board[newPosY+1][newPosX+1]==playerB or board[newPosY+1][newPosX+1]==playerKB)and pieceY+1<8 and pieceX+1<8):
 				input('Another available piece to be eaten. Press enter to continue')
 				board[newPosY+2][newPosX+2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
 				board[newPosY+1][newPosX+1]=0
 				printGrid()
-			if((board[newPosY-1][newPosX-1]==playerB or board[newPosY-1][newPosX-1]==playerKB)):
+			if((board[newPosY-1][newPosX-1]==playerB or board[newPosY-1][newPosX-1]==playerKB)and pieceY-1>=0 and pieceX-1>=0):
 				input('Another available piece to be eaten. Press enter to continue')
 				# Updates board values
 				board[newPosY-2][newPosX-2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
 				board[newPosY-1][newPosX-1]=0
 				printGrid()
-			if((board[newPosY-1][newPosX+1]==playerB or board[newPosY-1][newPosX+1]==playerKB) ):
+			if((board[newPosY-1][newPosX+1]==playerB or board[newPosY-1][newPosX+1]==playerKB)and pieceY-1>=0 and pieceX+1<8):
 				input('Another available piece to be eaten. Press enter to continue')
 				board[newPosY-2][newPosX+2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
 				board[newPosY-1][newPosX+1]=0
 				printGrid()
-def validateAI():
-	#Assings a random number with the 0-7 range
-	pieceY=(random.randint(0,7))
-	pieceX=(random.randint(0,7))
-	#Checks the values selected are correct
-	if(pieceX >=0 and pieceX <8 and pieceY >=0 and pieceY <8):
-		#If a normal piece is selected, normal moves will be executed
-		if((board[pieceY][pieceX]== playerB) and((board[pieceY-1][pieceX+1]==0 or board[pieceY-1][pieceX-1]==0) or (board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX-1]==playerKR or board[pieceY-1][pieceX+1]==playerKR))):
-			#If there's a piece that can be eaten, it'll b executed first
-			if(((board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)  and board[pieceY-2][pieceX-2]==0) or ((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR) and board[pieceY-2][pieceX+2]==0)):
-				#Makes user aware of the piece selected
-				print('\n''Your enemy has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
-				#Checks both sides for enemy's pieces that could be eaten
-				if((board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)and pieceY-2>=0 and pieceX-2>=0):
-					#Updates board values
-					board[pieceY-2][pieceX-2]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					board[pieceY-1][pieceX-1]=0
-					newPosY=pieceY-2
-					newPosX=pieceX-2
-					printGrid()
-					print('\n' 'Oh no! Enemy ate one of your pieces!' '\n')
-					#Checks if there's any double jumps available 
-					doubleJumpB()
-					printGrid()
-					print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
-					#Changes turn to the other player
-					global turn
-					turn=0
-				if((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR)and pieceY-2>=0 and pieceX+2<8):
-					board[pieceY-2][pieceX+2]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					board[pieceY-1][pieceX+1]=0
-					newPosY=pieceY-2
-					newPosX=pieceX+2
-					printGrid()
-					print('\n' 'Oh no! Enemy ate one of your pieces!' '\n')
-					doubleJumpB()
-					printGrid()
-					print('\n''And moved it to '+str(newPosX)+', '+str(newPosY)+'\n')
-					turn=0
-			#If there's no nearby pieces to be eaten, it will move it to the next avalible square
-			if((board[pieceY-1][pieceX-1]==0 or board[pieceY-1][pieceX+1]==0) and turn==1):
-				print('\n''Your enemy has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
-				if(board[pieceY-1][pieceX-1]==0 and turn!=0 and pieceX-1>=0 and pieceY-1>=0):
-					board[pieceY-1][pieceX-1]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					printGrid()
-					print('\n''And moved it to '+str(pieceX-1)+', '+str(pieceY-1)+'\n')
-					turn=0
-				if(board[pieceY-1][pieceX+1]==0 and turn!=0 and pieceY-1>=0 and pieceX+1<8):
-					board[pieceY-1][pieceX+1]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					printGrid()
-					print('\n''And moved it to '+str(pieceX+1)+', '+str(pieceY-1)+'\n')
-					turn=0
-		#If the piece selected is a King, special will be unlocked
-		if(board[pieceY][pieceX]== playerKB):
-			#If there's a piece that can be eaten, it'll b executed first
-			if (board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX+1]==playeR or board[pieceY+1][pieceX-1]==playeR or board[pieceY+1][pieceX+1]==playeR or board[pieceY-1][pieceX-1]==playerKR or board[pieceY-1][pieceX+1]==playerKR or board[pieceY+1][pieceX-1]==playerKR or board[pieceY+1][pieceX+1]==playerKR):
-				if((board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)and pieceY-2>=0 and pieceX-2>=0):
-					board[pieceY-2][pieceX-2]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					board[pieceY-1][pieceX-1]=0
-					newPosY=pieceY-2
-					newPosX=pieceX-2
-					printGrid()
-					print('\n' 'Oh no! Enemy ate one of your pieces!' '\n')
-					doubleJumpB()
-					printGrid()
-					print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
-					turn=0
-				if((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR)and pieceY-2>=0 and pieceX+2<8):
-					board[pieceY-2][pieceX+2]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					board[pieceY-1][pieceX+1]=0
-					newPosY=pieceY-2
-					newPosX=pieceX+2
-					printGrid()
-					print('\n' 'Oh no! Enemy ate one of your pieces!' '\n')
-					doubleJumpB()
-					printGrid()
-					print('\n''And moved it to '+str(newPosX)+', '+str(newPosY)+'\n')
-					turn=0
-				if((board[pieceY+1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)and pieceY+2<8 and pieceX-2>=0):
-					board[pieceY+2][pieceX-2]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					board[pieceÝ+1][pieceX-1]=0
-					newPosY=pieceY+2
-					newPosX=pieceX-2
-					printGrid()
-					print('\n' 'Oh no! Enemy ate one of your pieces!' '\n')
-					doubleJumpB()
-					printGrid()
-					print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
-					turn=0
-				if((board[pieceY+1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR)and pieceY+2<8 and pieceX+2<8):
-					board[pieceY+2][pieceX+2]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					board[pieceY+1][pieceX+1]=0
-					newPosY=pieceY+2
-					newPosX=pieceY+2
-					printGrid()
-					print('\n' 'Oh no! Enemy ate one of your pieces!' '\n')
-					doubleJumpB()
-					printGrid()
-					print('\n''And moved it to '+str(newPosX)+', '+str(newPosY)+'\n')
-					turn=0
-			#If there's no enemy's pieces neraby, it'll be moved to the next available spot
-			if(board[pieceY-1][pieceX+1]==0 or board[pieceY-1][pieceX-1]==0 or board[pieceY+1][pieceX+1]==0 or board[pieceY+1][pieceX-1]==0):
-				print('\n''Your enemy has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
-				if(board[pieceY-1][pieceX-1]==0 and turn!=0 and pieceY-1>=0 and pieceX+1<8):
-					board[pieceY-1][pieceX-1]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					printGrid()
-					print('\n''And moved it to '+str(pieceX-1)+', '+str(pieceY-1)+'\n')
-					turn=0
-				if(board[pieceY-1][pieceX+1]==0 and turn!=0 and pieceY-1>=0 and pieceX+1<8):
-					board[pieceY-1][pieceX+1]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					printGrid()
-					print('\n''And moved it to '+str(pieceX+1)+', '+str(pieceY-1)+'\n')
-					turn=0
-				if(board[pieceY+1][pieceX-1]==0 and turn!=0 and pieceY+1<8 and pieceX-1<=0):
-					board[pieceY+1][pieceX-1]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					printGrid()
-					print('\n''And moved it to '+str(pieceX-1)+', '+str(pieceY-1)+'\n')
-					turn=0
-				if(board[pieceY+1][pieceX+1]==0 and turn!=0 and pieceY+1<8 and pieceX+1<8):
-					board[pieceY+1][pieceX+1]=board[pieceY][pieceX]
-					board[pieceY][pieceX]=0
-					printGrid()
-					print('\n''And moved it to '+str(pieceX+1)+', '+str(pieceY-1)+'\n')
-					turn=0
 #Checks the coordinates given are valid
 def validateB():
 		#Makes these variables global so their values can be used by other functions
@@ -614,44 +471,45 @@ def possibleMovesB():
 		pass	
 #Another jump will be taken if there's an enemy's piece to be eaten	
 def doubleJumpB():
-	while(((board[newPosY-1][newPosX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)and board[newPosY-2][newPosX-2]==0) or ((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR) and (board[newPosY-2][newPosX+2]==0))):
-		if(board[newPosY-1][newPosX-1]==playerR or board[pieceY-1][pieceX-1]==playerKR):
-			input('Your enemy has a double jump available. Press enter to continue')
-			#Updates board piece positions
-			board[newPosY-2][newPosX-2]=board[newPosY][newPosX]
-			board[newPosY][newPosX]=0
-			board[newPosY-1][newPosX-1]=0
-			printGrid()
-		elif(board[newPosY-1][newPosX+1]==playerR or board[pieceY-1][pieceX+1]==playerKR):
-			input('Your enemy has a double jump available. Press enter to continue')
-			board[newPosY-2][newPosX+2]=board[newPosY][newPosX]
-			board[newPosY][newPosX]=0
-			board[newPosY-1][newPosX+1]=0
-			printGrid()
+	if(board[newPosY][newPosX]==playerB):
+		while(((board[newPosY-1][newPosX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)and board[newPosY-2][newPosX-2]==0) or ((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR) and (board[newPosY-2][newPosX+2]==0))):
+			if(board[newPosY-1][newPosX-1]==playerR or board[pieceY-1][pieceX-1]==playerKR) and pieceY-1>=0 and pieceX-1>=0:
+				input('Your enemy has a double jump available. Press enter to continue')
+				#Updates board piece positions
+				board[newPosY-2][newPosX-2]=board[newPosY][newPosX]
+				board[newPosY][newPosX]=0
+				board[newPosY-1][newPosX-1]=0
+				printGrid()
+			elif(board[newPosY-1][newPosX+1]==playerR or board[pieceY-1][pieceX+1]==playerKR)and pieceY-1>=0 and pieceX+1<8:
+				input('Your enemy has a double jump available. Press enter to continue')
+				board[newPosY-2][newPosX+2]=board[newPosY][newPosX]
+				board[newPosY][newPosX]=0
+				board[newPosY-1][newPosX+1]=0
+				printGrid()
 	#Checks if the piece to make the double jump is a King and allows them to make a double jump in any direction
 	if(board[newPosY][newPosX]==playerKB):
 		while(((board[newPosY+1][newPosX-1]==playeR or board[newPosY+1][newPosX-1]==playerKR) and board[newPosY+2][newPosX-2]==0) or((board[newPosY+1][newPosX+1]==playeR or board[newPosY+1][newPosX+1]==playerKR) and board[newPosY+2][newPosX+2]==0) or((board[newPosY-1][newPosX-1]==playeR or board[newPosY-1][newPosX-1]==playerKR)and board[newPosY-2][newPosX-2]==0) or ((board[newPosY-1][newPosX+1]==playeR or board[newPosY-1][newPosX+1]==playerKR) and board[newPosY-2][newPosX+2]==0)):
-			if((board[newPosY+1][newPosX-1]==playeR or board[newPosY+1][newPosX-1]==playerKR) ):
+			if((board[newPosY+1][newPosX-1]==playeR or board[newPosY+1][newPosX-1]==playerKR) and pieceY+1<8 and pieceX-1>=0 ):
 				input('Another available piece to be eaten. Press enter to continue')
 				# Updates board values
 				board[newPosY+2][newPosX-2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
 				board[newPosY+1][newPosX-1]=0
 				printGrid()
-			if((board[newPosY+1][newPosX+1]==playeR or board[newPosY+1][newPosX+1]==playerKR)):
+			if((board[newPosY+1][newPosX+1]==playeR or board[newPosY+1][newPosX+1]==playerKR) and pieceY+1<8 and pieceX+1<8 ):
 				input('Another available piece to be eaten. Press enter to continue')
 				board[newPosY+2][newPosX+2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
 				board[newPosY+1][newPosX+1]=0
 				printGrid()
-			if((board[newPosY-1][newPosX-1]==playeR or board[newPosY-1][newPosX-1]==playerKR)):
+			if((board[newPosY-1][newPosX-1]==playeR or board[newPosY-1][newPosX-1]==playerKR) and pieceY-1>=0 and pieceX-1>=0):
 				input('Another available piece to be eaten. Press enter to continue')
 				# Updates board values
 				board[newPosY-2][newPosX-2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
 				board[newPosY-1][newPosX-1]=0
 				printGrid()
-			if((board[newPosY-1][newPosX+1]==playeR or board[newPosY-1][newPosX+1]==playerKR) ):
+			if((board[newPosY-1][newPosX+1]==playeR or board[newPosY-1][newPosX+1]==playerKR) and pieceY-1>=0 and pieceX+1<8):
 				input('Another available piece to be eaten. Press enter to continue')
 				board[newPosY-2][newPosX+2]=board[newPosY][newPosX]
 				board[newPosY][newPosX]=0
@@ -716,10 +574,298 @@ def checkVictory():
 		print('\n''WOOHOO! RED PLAYER, YOU ARE A WINNER! ''\n')
 		print('--------------GAME OVER--------------''\n')
 		welcomeStart()
+def validateAIR():
+	#Assings a random number with the 0-7 range
+	pieceY=(random.randint(0,7))
+	pieceX=(random.randint(0,7))
+	#Checks the values selected are correct
+	if(pieceX >=0 and pieceX <8 and pieceY >=0 and pieceY <8):
+		#If a normal piece is selected, normal moves will be executed
+		if(board[pieceY][pieceX]== playeR):
+			try:
+				#If there's a piece that can be eaten, it'll b executed first
+				if(((board[pieceY+1][pieceX-1]==playerB or board[pieceY+1][pieceX-1]==playerKB)  and board[pieceY+2][pieceX-2]==0) or ((board[pieceY+1][pieceX+1]==playerB or board[pieceY+1][pieceX+1]==playerKB) and board[pieceY+2][pieceX+2]==0)):
+					#Makes user aware of the piece selected
+					print('\n''Player 1 has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
+					#Checks both sides for enemy's pieces that could be eaten
+					if((board[pieceY+1][pieceX-1]==playerB or board[pieceY+1][pieceX-1]==playerKB)and pieceY+2<8 and pieceX-2>=0):
+						#Updates board values
+						board[pieceY+2][pieceX-2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY+1][pieceX-1]=0
+						newPosY=pieceY+2
+						newPosX=pieceX-2
+						printGrid()
+						print('\n' 'Oh no! Player 1 ate one of your pieces!' '\n')
+						#Checks if there's any double jumps available 
+						doubleJumpR()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						#Changes turn to the other playerB
+						global turn
+						turn=1
+					if((board[pieceY+1][pieceX+1]==playerB or board[pieceY+1][pieceX+1]==playerKB)and pieceY+2<8 and pieceX+2<8):
+						board[pieceY+2][pieceX+2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY+1][pieceX+1]=0
+						newPosY=pieceY+2
+						newPosX=pieceX+2
+						printGrid()
+						print('\n' 'Oh no! Player 1 ate one of your pieces!' '\n')
+						doubleJumpR()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=1
+				#If there's no nearby pieces to be eaten, it will move it to the next avalible square
+				if((board[pieceY+1][pieceX-1]==0 or board[pieceY+1][pieceX+1]==0) and turn==0):
+					print('\n''Player 1 has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
+					if(board[pieceY+1][pieceX-1]==0 and turn!=1 and pieceX-1>=0 and pieceY+1<8):
+						board[pieceY+1][pieceX-1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to: '+str(pieceX-1)+', '+str(pieceY+1)+'\n')
+						turn=1
+					if(board[pieceY+1][pieceX+1]==0 and turn!=1 and pieceY+1<8 and pieceX+1<8):
+						board[pieceY+1][pieceX+1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to: '+str(pieceX+1)+', '+str(pieceY+1)+'\n')
+						turn=1
+			except:
+				pass
+		#If the piece selected is a King, special will be unlocked
+		if(board[pieceY][pieceX]== playerKR):
+			try:
+				#If there's a piece that can be eaten, it'll b executed first
+				if (board[pieceY-2][pieceX-2]==0 or board[pieceY-2][pieceX+2]==0 or board[pieceY+2][pieceX-2]==0 or board[pieceY+2][pieceX+2]==0):
+					if((board[pieceY-1][pieceX-1]==playerB or board[pieceY-1][pieceX-1]==playerKB)and pieceY-2>=0 and pieceX-2>=0):
+						board[pieceY-2][pieceX-2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY-1][pieceX-1]=0
+						newPosY=pieceY-2
+						newPosX=pieceX-2
+						printGrid()
+						print('\n' 'Oh no! Player 1 ate one of your pieces!' '\n')
+						doubleJumpR()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=1
+					if((board[pieceY-1][pieceX+1]==playerB or board[pieceY-1][pieceX+1]==playerKB)and pieceY-2>=0 and pieceX+2<8):
+						board[pieceY-2][pieceX+2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY-1][pieceX+1]=0
+						newPosY=pieceY-2
+						newPosX=pieceX+2
+						printGrid()
+						print('\n' 'Oh no! Player 1 ate one of your pieces!' '\n')
+						doubleJumpR()
+						printGrid()
+						print('\n''And moved it to '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=1
+					if((board[pieceY+1][pieceX-1]==playerB or board[pieceY-1][pieceX-1]==playerKB)and pieceY+2<8 and pieceX-2>=0):
+						board[pieceY+2][pieceX-2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceÝ+1][pieceX-1]=0
+						newPosY=pieceY+2
+						newPosX=pieceX-2
+						printGrid()
+						print('\n' 'Oh no! Player 1 ate one of your pieces!' '\n')
+						doubleJumpR()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=1
+					if((board[pieceY+1][pieceX+1]==playerB or board[pieceY-1][pieceX+1]==playerKB)and pieceY+2<8 and pieceX+2<8):
+						board[pieceY+2][pieceX+2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY+1][pieceX+1]=0
+						newPosY=pieceY+2
+						newPosX=pieceY+2
+						printGrid()
+						print('\n' 'Oh no! Player 1 ate one of your pieces!' '\n')
+						doubleJumpR()
+						printGrid()
+						print('\n''And moved it to '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=1
+			except:
+				pass
+			try:
+				#If there's no Player 1's pieces neraby, it'll be moved to the next available spot
+				if(board[pieceY-1][pieceX+1]==0 or board[pieceY-1][pieceX-1]==0 or board[pieceY+1][pieceX+1]==0 or board[pieceY+1][pieceX-1]==0):
+					print('\n''Player 1 has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
+					if(board[pieceY-1][pieceX-1]==0 and turn!=1 and pieceY-1>=0 and pieceX+1<8):
+						board[pieceY-1][pieceX-1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to '+str(pieceX-1)+', '+str(pieceY-1)+'\n')
+						turn=1
+					if(board[pieceY-1][pieceX+1]==0 and turn!=1 and pieceY-1>=0 and pieceX+1<8):
+						board[pieceY-1][pieceX+1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to '+str(pieceX+1)+', '+str(pieceY-1)+'\n')
+						turn=1
+					if(board[pieceY+1][pieceX-1]==0 and turn!=1 and pieceY+1<8 and pieceX-1>=0):
+						board[pieceY+1][pieceX-1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to '+str(pieceX-1)+', '+str(pieceY+1)+'\n')
+						turn=1
+					if(board[pieceY+1][pieceX+1]==0 and turn!=1 and pieceY+1<8 and pieceX+1<8):
+						board[pieceY+1][pieceX+1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to '+str(pieceX+1)+', '+str(pieceY+1)+'\n')
+						turn=1
+			except:
+				pass
+def validateAIB():
+	#Assings a random number with the 0-7 range
+	pieceY=(random.randint(0,7))
+	pieceX=(random.randint(0,7))
+	#Checks the values selected are correct
+	if(pieceX >=0 and pieceX <8 and pieceY >=0 and pieceY <8):
+		#If a normal piece is selected, normal moves will be executed
+		if(board[pieceY][pieceX]== playerB):
+			try:
+				#If there's a piece that can be eaten, it'll b executed first
+				if(((board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)  and board[pieceY-2][pieceX-2]==0) or ((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR) and board[pieceY-2][pieceX+2]==0)):
+					#Makes user aware of the piece selected
+					print('\n''Player 2 has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
+					#Checks both sides for Player 2's pieces that could be eaten
+					if((board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)and pieceY-2>=0 and pieceX-2>=0):
+						#Updates board values
+						board[pieceY-2][pieceX-2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY-1][pieceX-1]=0
+						newPosY=pieceY-2
+						newPosX=pieceX-2
+						printGrid()
+						print('\n' 'Oh no! Player 2 ate one of your pieces!' '\n')
+						#Checks if there's any double jumps available 
+						doubleJumpB()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						#Changes turn to the other player
+						global turn
+						turn=0
+					if((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR)and pieceY-2>=0 and pieceX+2<8):
+						board[pieceY-2][pieceX+2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY-1][pieceX+1]=0
+						newPosY=pieceY-2
+						newPosX=pieceX+2
+						printGrid()
+						print('\n' 'Oh no! Player 2 ate one of your pieces!' '\n')
+						doubleJumpB()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=0
+				#If there's no nearby pieces to be eaten, it will move it to the next avalible square
+				if((board[pieceY-1][pieceX-1]==0 or board[pieceY-1][pieceX+1]==0) and turn==1):
+					print('\n''Player 2 has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
+					if(board[pieceY-1][pieceX-1]==0 and turn!=0 and pieceX-1>=0 and pieceY-1>=0):
+						board[pieceY-1][pieceX-1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to: '+str(pieceX-1)+', '+str(pieceY-1)+'\n')
+						turn=0
+					if(board[pieceY-1][pieceX+1]==0 and turn!=0 and pieceY-1>=0 and pieceX+1<8):
+						board[pieceY-1][pieceX+1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to: '+str(pieceX+1)+', '+str(pieceY-1)+'\n')
+						turn=0
+			except:
+				pass
+		#If the piece selected is a King, special will be unlocked
+		if(board[pieceY][pieceX]== playerKB):
+			try:
+				#If there's a piece that can be eaten, it'll b executed first
+				if (board[pieceY-2][pieceX-2]==0 or board[pieceY-2][pieceX+2]==0 or board[pieceY+2][pieceX-2]==0 or board[pieceY+2][pieceX+2]==0):
+					if((board[pieceY-1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)and pieceY-2>=0 and pieceX-2>=0):
+						board[pieceY-2][pieceX-2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY-1][pieceX-1]=0
+						newPosY=pieceY-2
+						newPosX=pieceX-2
+						printGrid()
+						print('\n' 'Oh no! Player 2 ate one of your pieces!' '\n')
+						doubleJumpB()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=0
+					if((board[pieceY-1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR)and pieceY-2>=0 and pieceX+2<8):
+						board[pieceY-2][pieceX+2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY-1][pieceX+1]=0
+						newPosY=pieceY-2
+						newPosX=pieceX+2
+						printGrid()
+						print('\n' 'Oh no! Player 2 ate one of your pieces!' '\n')
+						doubleJumpB()
+						printGrid()
+						print('\n''And moved it to '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=0
+					if((board[pieceY+1][pieceX-1]==playeR or board[pieceY-1][pieceX-1]==playerKR)and pieceY+2<8 and pieceX-2>=0):
+						board[pieceY+2][pieceX-2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceÝ+1][pieceX-1]=0
+						newPosY=pieceY+2
+						newPosX=pieceX-2
+						printGrid()
+						print('\n' 'Oh no! Player 2 ate one of your pieces!' '\n')
+						doubleJumpB()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=0
+					if((board[pieceY+1][pieceX+1]==playeR or board[pieceY-1][pieceX+1]==playerKR)and pieceY+2<8 and pieceX+2<8):
+						board[pieceY+2][pieceX+2]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						board[pieceY+1][pieceX+1]=0
+						newPosY=pieceY+2
+						newPosX=pieceY+2
+						printGrid()
+						print('\n' 'Oh no! Player 2 ate one of your pieces!' '\n')
+						doubleJumpB()
+						printGrid()
+						print('\n''And moved it to: '+str(newPosX)+', '+str(newPosY)+'\n')
+						turn=0
+			except:
+				pass
+			try:
+				#If there's no Player 2's pieces neraby, it'll be moved to the next available spot
+				if(board[pieceY-1][pieceX+1]==0 or board[pieceY-1][pieceX-1]==0 or board[pieceY+1][pieceX+1]==0 or board[pieceY+1][pieceX-1]==0):
+					print('\n''Player 2 has chosen: '+str(pieceX)+', '+str(pieceY)+'\n')
+					if(board[pieceY-1][pieceX-1]==0 and turn!=0 and pieceY-1>=0 and pieceX+1<8):
+						board[pieceY-1][pieceX-1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to: '+str(pieceX-1)+', '+str(pieceY-1)+'\n')
+						turn=0
+					if(board[pieceY-1][pieceX+1]==0 and turn!=0 and pieceY-1>=0 and pieceX+1<8):
+						board[pieceY-1][pieceX+1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to: '+str(pieceX+1)+', '+str(pieceY-1)+'\n')
+						turn=0
+					if(board[pieceY+1][pieceX-1]==0 and turn!=0 and pieceY+1<8 and pieceX-1>=0):
+						board[pieceY+1][pieceX-1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to: '+str(pieceX-1)+', '+str(pieceY+1)+'\n')
+						turn=0
+					if(board[pieceY+1][pieceX+1]==0 and turn!=0 and pieceY+1<8 and pieceX+1<8):
+						board[pieceY+1][pieceX+1]=board[pieceY][pieceX]
+						board[pieceY][pieceX]=0
+						printGrid()
+						print('\n''And moved it to: '+str(pieceX+1)+', '+str(pieceY+1)+'\n')
+						turn=0
+			except:
+				pass
 #Contains the main menu and controls the game
 def welcomeStart():
 	input('Welcome to checkers! Press enter to start')
-	gameMode=input('\n''ARCADE MODE: Press 1 │ TWO PLAYER: Press 2 │ HELP: Press 3 │ QUIT: exit''\n')
+	gameMode=input('\n''ARCADE MODE: Press 1 │ TWO PLAYER: Press 2 │ AI vs AI: Press 3 │ HELP: Press 4 │ QUIT: exit''\n')
 	#Lets user now who is staring the game
 	print('\n' 'You are playing as Rs')
 	printGrid()
@@ -733,13 +879,22 @@ def welcomeStart():
 				print('Incorrect input')
 	if(gameMode=='2'):
 		while(True):
-			try:	
+			try:
 				#Controls turns between player
 				twoPlayerMode()
 			except ValueError:
 				print('Incorrect input')
-	if ( gameMode=='3'):
+	if(gameMode=='3'):
+		while(True):
+			try:
+				#Controls turns between computer vs computer
+				aiVSaiMode()
+			except ValueError:
+				print('Incorrect input')
+	if (gameMode=='4'):
+		print('\n''The aim of this game is to take every enemys piece by jumping over them. If your piece is in front of your opponents and it is your turn, theirs will be taken.''\n')
 		print('\n''Type the coordinates (originating from the top left) of the box you want to put a cross into in the format \'y,x\' (e.g. 3 2)''\n')
+		print('\n' '----------------------GOOD LUCK!--------------------' '\n')
 		#Goes back to the game after instructions have been provaided
 		welcomeStart()
 	if(gameMode=='exit'):
@@ -748,5 +903,4 @@ def welcomeStart():
 		welcomeStart()
 #starts the game
 welcomeStart()
-
 sys.exit()
